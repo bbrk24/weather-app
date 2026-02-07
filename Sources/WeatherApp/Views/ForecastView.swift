@@ -60,14 +60,13 @@ struct ForecastView: View {
 
                                         Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
                                     }
-                                    .padding(5)
+                                    .padding(6)
                                     .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
                                     .foregroundColor(period.isDaytime ? ForecastView.dayForegroundColor : .white)
                                 }
                             }
-                            .cornerRadius(8)
+                            .cornerRadius(5)
                         }
-                        .cornerRadius(8)
                         .padding(.vertical)
                     }
                 }
