@@ -38,7 +38,8 @@ extension WeatherApp {
 
             Service(.weak, ContentViewModel.self) { r in 
                 ContentViewModelImplementation(
-                    locationInfoRepository: r.resolve()
+                    locationInfoRepository: r.resolve(),
+                    stationRepository: r.resolve()
                 )
             }
 
@@ -52,12 +53,27 @@ extension WeatherApp {
             Service(.weak, ForecastViewModel.self) { r in
                 ForecastViewModelImplementation(
                     forecastRepository: r.resolve(),
-                    alertRepository: r.resolve()
+                    alertRepository: r.resolve(),
+                    observationRepository: r.resolve()
                 )
             }
 
             Service(.transient, AlertRepository.self) { r in
                 AlertRepositoryImplementation(
+                    requester: r.resolve(),
+                    decoder: r.resolve()
+                )
+            }
+
+            Service(.transient, ObservationRepository.self) { r in
+                ObservationRepositoryImplementation(
+                    requester: r.resolve(),
+                    decoder: r.resolve()
+                )
+            }
+
+            Service(.transient, StationRepository.self) { r in
+                StationRepositoryImplementation(
                     requester: r.resolve(),
                     decoder: r.resolve()
                 )

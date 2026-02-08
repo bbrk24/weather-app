@@ -58,3 +58,38 @@ struct AlertProperties: Decodable, Identifiable {
     var description: String
     var instruction: String?
 }
+
+// MARK: Stations
+struct StationProperties: Decodable {
+    var stationIdentifier: String
+}
+
+// MARK: Observations
+enum QualityControl: String, Decodable {
+    case unverified = "Z"
+    case coarse = "C"
+    case screened = "S"
+    case verified = "V"
+    case rejected = "X"
+    case questioned = "Q"
+    case good = "G"
+    case bad = "B"
+    case interpolated = "T"
+}
+
+struct ValueWithQC: Decodable {
+    var unitCode: String
+    var value: Float?
+    var qualityControl: QualityControl
+} 
+
+struct Observation: Decodable {
+    var stationName: String
+    var timestamp: Date
+    var temperature: ValueWithQC
+    var relativeHumidity: ValueWithQC
+    var windChill: ValueWithQC
+    var heatIndex: ValueWithQC
+    var windSpeed: ValueWithQC
+    var barometricPressure: ValueWithQC
+}

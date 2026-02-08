@@ -8,6 +8,7 @@ protocol ForecastViewModel {
     var hourlyForecast: Forecast? { get }
     var dailyForecast: Forecast? { get }
     var alerts: [AlertProperties]? { get }
+    var latestObservation: Observation? { get }
     var error: Error? { get }
     var isLoading: Bool { get }
 
@@ -17,20 +18,24 @@ protocol ForecastViewModel {
 final class ForecastViewModelImplementation: ForecastViewModel, ObservableObject {
     private let forecastRepository: ForecastRepository
     private let alertRepository: AlertRepository
+    private let observationRepository: ObservationRepository
 
     @Published var hourlyForecast: Forecast?
     @Published var dailyForecast: Forecast?
     @Published var error: Error?
     @Published var alerts: [AlertProperties]?
+    @Published var latestObservation: Observation?
     private var task: Task<Void, Never>?
     var isLoading: Bool { task != nil }
 
     init(
         forecastRepository: ForecastRepository,
-        alertRepository: AlertRepository
+        alertRepository: AlertRepository,
+        observationRepository: ObservationRepository
     ) {
         self.forecastRepository = forecastRepository
         self.alertRepository = alertRepository
+        self.observationRepository = observationRepository
     }
 
     func loadForecasts(location: StoredLocation) {
@@ -40,14 +45,16 @@ final class ForecastViewModelImplementation: ForecastViewModel, ObservableObject
         dailyForecast = nil
         error = nil
         alerts = nil
+        latestObservation = nil
 
         task = Task {
             async let hourlyForecast = forecastRepository.getHourlyForecast(url: location.forecast)
             async let dailyForecast = forecastRepository.getDailyForecast(url: location.forecast)
             async let alerts = alertRepository.getAlerts(zone: location.zone)
+            async let latestObservation = observationRepository.getLatestObservation(station: location.station)
 
             do {
-                (self.hourlyForecast, self.dailyForecast, self.alerts) = try await (hourlyForecast, dailyForecast, alerts)
+                (self.hourlyForecast, self.dailyForecast, self.alerts, self.latestObservation) = try await (hourlyForecast, dailyForecast, alerts, latestObservation)
             } catch AFError.explicitlyCancelled {
                 return
             } catch {

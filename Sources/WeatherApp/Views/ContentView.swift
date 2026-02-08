@@ -66,10 +66,20 @@ struct ContentView: View {
                             Task {
                                 error = nil
                                 do {
-                                    let newLocation = try await viewModel.searchLocationInfo(lat: lat, long: long)
-                                    locations.append(.init(locationInfo: newLocation))
-                                    selectedIndex = locations.count - 1
-                                    showModal = false
+                                    let (newLocation, station) = try await viewModel.searchLocationInfo(lat: lat, long: long)
+                                    guard let station else {
+                                        error = "Could not determine nearest observation station to given location."
+                                        return
+                                    }
+
+                                    let stored = StoredLocation(locationInfo: newLocation, station: station.stationIdentifier)
+                                    if locations.contains(where: { $0.id == stored.id }) {
+                                        error = "This location has already been added."
+                                    } else {
+                                        locations.append(stored)
+                                        selectedIndex = locations.count - 1
+                                        showModal = false
+                                    }
                                 } catch {
                                     debugPrint(error)
                                     if let he = error as? HttpError,

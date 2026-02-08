@@ -6,6 +6,7 @@ public struct StoredLocation: Codable, Identifiable, Sendable {
     public var cityName: String
     public var customName: String
     public var zone: String
+    public var station: String
 
     var displayName: String {
         if customName.contains(/\S/) {
@@ -15,11 +16,12 @@ public struct StoredLocation: Codable, Identifiable, Sendable {
         }
     }
 
-    init(locationInfo: LocationInfo) {
+    init(locationInfo: LocationInfo, station: String) {
         self.zone = locationInfo.forecastZone.lastPathComponent
         self.id = "\(locationInfo.gridId);\(locationInfo.gridX),\(locationInfo.gridY);\(self.zone)"
         self.forecast = locationInfo.forecast
         self.cityName = "\(locationInfo.relativeLocation.city), \(locationInfo.relativeLocation.state)"
         self.customName = ""
+        self.station = station
     }
 }

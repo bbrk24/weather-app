@@ -8,7 +8,10 @@ struct ForecastView: View {
     @Store var viewModel = Factory.shared.resolve(ForecastViewModel.self)
     @State var modalAlerts: [AlertProperties] = []
 
+    @Environment(\.suggestedForegroundColor) var foregroundColor
+
     static let hourFormatter = Date.FormatStyle().hour()
+    static let timeFormatter = Date.FormatStyle().hour().minute()
 
     static let dayBackgroundColor = Color.adaptive(light: Color.blue, dark: Color(red: 0.0, green: 0.0, blue: 0.8))
     static let dayForegroundColor = Color.adaptive(light: .black, dark: .white)
@@ -47,27 +50,61 @@ struct ForecastView: View {
                             .padding()
                     }
 
-                    if let hourlyForecast = viewModel.hourlyForecast {
-                        ScrollView(.horizontal) {
-                            HStack(alignment: .bottom, spacing: 0) {
-                                ForEach(hourlyForecast.periods.prefix(24), id: \.startTime) { period in
-                                    VStack {
-                                        Text(ForecastView.hourFormatter.format(period.startTime))
+                    if let observation = viewModel.latestObservation {
+                        VStack {
+                            Text(
+                                "Conditions at \(observation.stationName) as of \(ForecastView.timeFormatter.format(observation.timestamp))"
+                            )
+                                .font(.caption)
 
-                                        Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
-
-                                        Text(String(format: "%.0f%%", period.probabilityOfPrecipitation.value))
-
-                                        Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
-                                    }
-                                    .padding(6)
-                                    .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
-                                    .foregroundColor(period.isDaytime ? ForecastView.dayForegroundColor : .white)
-                                }
+                            if let temperature = observation.temperature.value {
+                                Text(String(format: "%.1f℉", tempCToF(temperature)))
+                                    .font(.largeTitle)
                             }
-                            .cornerRadius(5)
+
+                            if let windChill = observation.windChill.value {
+                                Text(String(format: "Wind chill: %.1f℉", tempCToF(windChill)))
+                            }
+
+                            if let heatIndex = observation.heatIndex.value {
+                                Text(String(format: "Heat index: %.1f℉", tempCToF(heatIndex)))
+                            }
+
+                            if let pressurePa = observation.barometricPressure.value {
+                                Text(String(format: "Air pressure: %.2f mbar", pressurePa / 100.0))
+                            }
                         }
+                        .padding(11)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    foregroundColor,
+                                    style: StrokeStyle(width: 1.5, cap: .round, join: .round)
+                                )
+                        )
                         .padding(.vertical)
+                    }
+                }
+
+                if let hourlyForecast = viewModel.hourlyForecast {
+                    ScrollView(.horizontal) {
+                        HStack(alignment: .bottom, spacing: 0) {
+                            ForEach(hourlyForecast.periods.prefix(24), id: \.startTime) { period in
+                                VStack {
+                                    Text(ForecastView.hourFormatter.format(period.startTime))
+
+                                    Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
+
+                                    Text(String(format: "%.0f%%", period.probabilityOfPrecipitation.value))
+
+                                    Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
+                                }
+                                .padding(6)
+                                .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
+                                .foregroundColor(period.isDaytime ? ForecastView.dayForegroundColor : .white)
+                            }
+                        }
+                        .cornerRadius(5)
                     }
                 }
 
