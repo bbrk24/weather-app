@@ -44,7 +44,7 @@ extension WeatherApp {
             }
 
             Service(.transient, ForecastRepository.self) { r in
-                ForecastRepositoryImplementaiton(
+                ForecastRepositoryImplementation(
                     requester: r.resolve(),
                     decoder: r.resolve()
                 )

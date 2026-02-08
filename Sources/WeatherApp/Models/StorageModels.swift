@@ -1,12 +1,17 @@
 import Foundation
 
-public struct StoredLocation: Codable, Identifiable, Sendable {
-    public var id: String
-    public var forecast: URL
-    public var cityName: String
-    public var customName: String
-    public var zone: String
-    public var station: String
+struct StoredLocation: Codable, Identifiable, Sendable {
+    var cityName: String
+    var customName: String
+    var zone: String
+    var station: String
+    var office: String
+    var gridX: UInt
+    var gridY: UInt
+
+    var id: String {
+        "\(office);\(gridX),\(gridY);\(zone)"
+    }
 
     var displayName: String {
         if customName.contains(/\S/) {
@@ -18,8 +23,9 @@ public struct StoredLocation: Codable, Identifiable, Sendable {
 
     init(locationInfo: LocationInfo, station: String) {
         self.zone = locationInfo.forecastZone.lastPathComponent
-        self.id = "\(locationInfo.gridId);\(locationInfo.gridX),\(locationInfo.gridY);\(self.zone)"
-        self.forecast = locationInfo.forecast
+        self.office = locationInfo.gridId
+        self.gridX = locationInfo.gridX
+        self.gridY = locationInfo.gridY
         self.cityName = "\(locationInfo.relativeLocation.city), \(locationInfo.relativeLocation.state)"
         self.customName = ""
         self.station = station

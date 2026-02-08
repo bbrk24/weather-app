@@ -48,8 +48,8 @@ final class ForecastViewModelImplementation: ForecastViewModel, ObservableObject
         latestObservation = nil
 
         task = Task {
-            async let hourlyForecast = forecastRepository.getHourlyForecast(url: location.forecast)
-            async let dailyForecast = forecastRepository.getDailyForecast(url: location.forecast)
+            async let hourlyForecast = forecastRepository.getHourlyForecast(office: location.office, x: location.gridX, y: location.gridY)
+            async let dailyForecast = forecastRepository.getDailyForecast(office: location.office, x: location.gridX, y: location.gridY)
             async let alerts = alertRepository.getAlerts(zone: location.zone)
             async let latestObservation = observationRepository.getLatestObservation(station: location.station)
 

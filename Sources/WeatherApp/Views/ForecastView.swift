@@ -36,7 +36,6 @@ struct ForecastView: View {
                             viewModel.loadForecasts(location: location)
                         }
                         .disabled(viewModel.isLoading)
-                        .padding(.trailing)
                     }
 
                     if viewModel.isLoading {
@@ -50,17 +49,19 @@ struct ForecastView: View {
                             .padding()
                     }
 
-                    if let observation = viewModel.latestObservation {
-                        VStack {
+                    if
+                        let observation = viewModel.latestObservation,
+                        let temperature = observation.temperature.value
+                    {
+                        VStack(spacing: 0) {
                             Text(
                                 "Conditions at \(observation.stationName) as of \(ForecastView.timeFormatter.format(observation.timestamp))"
                             )
                                 .font(.caption)
 
-                            if let temperature = observation.temperature.value {
-                                Text(String(format: "%.1f℉", tempCToF(temperature)))
-                                    .font(.largeTitle)
-                            }
+                            Text(String(format: "%.1f℉", tempCToF(temperature)))
+                                .font(.largeTitle)
+                                .padding(.vertical)
 
                             if let windChill = observation.windChill.value {
                                 Text(String(format: "Wind chill: %.1f℉", tempCToF(windChill)))
@@ -68,6 +69,25 @@ struct ForecastView: View {
 
                             if let heatIndex = observation.heatIndex.value {
                                 Text(String(format: "Heat index: %.1f℉", tempCToF(heatIndex)))
+                            }
+
+                            if
+                                observation.windChill.value == nil && observation.heatIndex.value == nil,
+                                let windSpeedKMH = observation.windSpeed.value,
+                                let humidity = observation.relativeHumidity.value
+                            {
+                                Text(
+                                    String(
+                                        format: "Feels like %.0f℉",
+                                        tempCToF(
+                                            australianApparentTemperature(
+                                                temperature,
+                                                windSpeedKMH / 3.6,
+                                                humidity
+                                            )
+                                        )
+                                    )
+                                )
                             }
 
                             if let pressurePa = observation.barometricPressure.value {
@@ -85,6 +105,7 @@ struct ForecastView: View {
                         .padding(.vertical)
                     }
                 }
+                .padding([.horizontal, .top])
 
                 if let hourlyForecast = viewModel.hourlyForecast {
                     ScrollView(.horizontal) {
@@ -106,6 +127,7 @@ struct ForecastView: View {
                         }
                         .cornerRadius(5)
                     }
+                    .padding(.horizontal)
                 }
 
                 if
@@ -155,13 +177,13 @@ struct ForecastView: View {
                             .frame(width: 450)
                         }
                     }
+                    .padding(.bottom)
                 }
             }
-            .onChange(of: location.forecast, initial: true) {
+            .onChange(of: location.id, initial: true) {
                 viewModel.loadForecasts(location: location)
                 modalAlerts = []
             }
-            .padding()
 
             if !modalAlerts.isEmpty {
                 ZStack {
