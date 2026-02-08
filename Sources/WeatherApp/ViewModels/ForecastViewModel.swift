@@ -15,16 +15,16 @@ protocol ForecastViewModel {
     func loadForecasts(location: StoredLocation)
 }
 
-final class ForecastViewModelImplementation: ForecastViewModel, ObservableObject {
+final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.ObservableObject {
     private let forecastRepository: ForecastRepository
     private let alertRepository: AlertRepository
     private let observationRepository: ObservationRepository
 
-    @Published var hourlyForecast: Forecast?
-    @Published var dailyForecast: Forecast?
-    @Published var error: Error?
-    @Published var alerts: [AlertProperties]?
-    @Published var latestObservation: Observation?
+    @SwiftCrossUI.Published var hourlyForecast: Forecast?
+    @SwiftCrossUI.Published var dailyForecast: Forecast?
+    @SwiftCrossUI.Published var error: Error?
+    @SwiftCrossUI.Published var alerts: [AlertProperties]?
+    @SwiftCrossUI.Published var latestObservation: Observation?
     private var task: Task<Void, Never>?
     var isLoading: Bool { task != nil }
 

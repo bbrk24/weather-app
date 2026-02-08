@@ -13,7 +13,7 @@ struct ContentView: View {
             NavigationSplitView {
                 ScrollView {
                     VStack(alignment: .trailing) {
-                        ForEach(locations.enumerated(), id: \.element.id) { index, location in
+                        ForEach(Array(locations.enumerated()), id: \.element.id) { index, location in
                             HStack {
                                 ZStack(alignment: .leading) {
                                     Color.clear

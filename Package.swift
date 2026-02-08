@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "WeatherApp",
+    platforms: [.macOS(.v13)],
     dependencies: [
         .package(url: "https://github.com/moreSwift/swift-cross-ui.git", revision: "844085ab10485dbe63ad87effd473ca3124d2e2f"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.11.1"))

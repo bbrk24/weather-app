@@ -1,4 +1,5 @@
 import OptimizedMath
+import Foundation
 
 func feelsLikeTemperature(period: ForecastPeriod) -> Float {
     if
@@ -7,8 +8,8 @@ func feelsLikeTemperature(period: ForecastPeriod) -> Float {
     {
         return heatIndex(tempCToF(period.temperature.value), humidity)
     } else {
-        let windMPH = period.windSpeed.doubleValue
-
+        let windMPH = NSString(string: period.windSpeed).doubleValue
+        
         if period.temperature.value <= 10.0 && windMPH > MIN_WIND_CHILL_SPEED_MPH {
             return tempCToF(windChill(period.temperature.value, windMPHToKMH(windMPH)))
         } else if let humidity = period.relativeHumidity?.value {
@@ -21,6 +22,6 @@ func feelsLikeTemperature(period: ForecastPeriod) -> Float {
             )
         }
     }
-
+    
     return tempCToF(period.temperature.value)
 }
