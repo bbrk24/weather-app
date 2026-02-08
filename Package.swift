@@ -13,13 +13,7 @@ let package = Package(
             name: "OptimizedMath",
             publicHeadersPath: "include",
             cSettings: [
-                .unsafeFlags([
-                    "-fassociative-math",
-                    "-ffast-math",
-                    "-ffp-contract=fast",
-                    "-fno-protect-parens",
-                    "-freciprocal-math",
-                ])
+                .unsafeFlags(["-ffast-math"]),
             ]
         ),
         .target(
