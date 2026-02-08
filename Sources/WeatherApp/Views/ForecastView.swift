@@ -203,7 +203,7 @@ struct ForecastView: View {
                             }
                         }
                     }
-                    .padding()
+                    .padding(20)
                     .frame(maxHeight: 500)
                     .background(Color.adaptive(light: .white, dark: .black))
                     .cornerRadius(20)
