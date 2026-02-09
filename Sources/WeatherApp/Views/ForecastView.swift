@@ -58,6 +58,8 @@ struct ForecastView: View {
                             )
                                 .font(.caption)
 
+                            // TODO: Add symbol based on presentWeather and skyLayers
+
                             Text(String(format: "%.1f℉", tempCToF(temperature)))
                                 .font(.largeTitle)
                                 .padding(.vertical)
@@ -109,6 +111,13 @@ struct ForecastView: View {
                 if let hourlyForecast = viewModel.hourlyForecast {
                     ScrollView(.horizontal) {
                         HStack(alignment: .bottom, spacing: 0) {
+                            VStack {
+                                Text("🌡️")
+                                Text("🌧️")
+                                Text("🤒")
+                            }
+                            .padding(6)
+
                             ForEach(hourlyForecast.periods.prefix(24), id: \.startTime) { period in
                                 VStack {
                                     Text(ForecastView.hourFormatter.format(period.startTime))
@@ -124,6 +133,7 @@ struct ForecastView: View {
                                 .foregroundColor(period.isDaytime ? foregroundColor : .white)
                             }
                         }
+                        .background(Color.gray)
                         .cornerRadius(5)
                     }
                     .padding(.horizontal)

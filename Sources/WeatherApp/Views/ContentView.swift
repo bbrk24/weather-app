@@ -34,7 +34,7 @@ struct ContentView: View {
                                 .padding([.vertical, .trailing], 10)
                             }
                             .background(
-                                index == selectedIndex ? Color.system(.yellow) : Color.system(.gray)
+                                index == selectedIndex ? Color.system(.yellow) : Color.gray
                             )
                             .if(index == selectedIndex) { 
                                 $0.foregroundColor(.black)
