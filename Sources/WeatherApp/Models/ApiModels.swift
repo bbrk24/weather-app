@@ -120,7 +120,6 @@ enum CloudCover: String, Decodable {
 }
 
 struct MetarSkyCoverage: Decodable {
-    var base: ValueWithUnit
     var amount: CloudCover
 }
 
