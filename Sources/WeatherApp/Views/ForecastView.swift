@@ -14,7 +14,6 @@ struct ForecastView: View {
     static let timeFormatter = Date.FormatStyle().hour().minute()
 
     static let dayBackgroundColor = Color.adaptive(light: Color.blue, dark: Color(red: 0.0, green: 0.0, blue: 0.8))
-    static let dayForegroundColor = Color.adaptive(light: .black, dark: .white)
     static let nightBackgroundColor = Color(red: 0.1, green: 0.1, blue: 0.2)
 
     var body: some View {
@@ -122,7 +121,7 @@ struct ForecastView: View {
                                 }
                                 .padding(6)
                                 .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
-                                .foregroundColor(period.isDaytime ? ForecastView.dayForegroundColor : .white)
+                                .foregroundColor(period.isDaytime ? foregroundColor : .white)
                             }
                         }
                         .cornerRadius(5)
@@ -172,7 +171,7 @@ struct ForecastView: View {
                             }
                             .padding()
                             .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
-                            .foregroundColor(period.isDaytime ? ForecastView.dayForegroundColor : .white)
+                            .foregroundColor(period.isDaytime ? foregroundColor : .white)
                             .cornerRadius(10)
                             .frame(width: 450)
                         }
