@@ -14,11 +14,15 @@ struct ContentView: View {
                 ScrollView {
                     VStack(alignment: .trailing) {
                         ForEach(Array(locations.enumerated()), id: \.element.id) { index, location in
-                            HStack {
+                            HStack(spacing: 0) {
                                 ZStack(alignment: .leading) {
                                     Color.clear
 
                                     Text(location.displayName)
+                                }
+                                .padding(.leading, 10)
+                                .onTapGesture {
+                                    selectedIndex = index
                                 }
 
                                 Button("-") {
@@ -27,15 +31,15 @@ struct ContentView: View {
                                         selectedIndex -= 1
                                     }
                                 }
+                                .padding([.vertical, .trailing], 10)
                             }
-                            .padding(10)
                             .background(
                                 index == selectedIndex ? Color.system(.yellow) : Color.system(.gray)
                             )
-                            .cornerRadius(10)
-                            .onTapGesture {
-                                selectedIndex = index
+                            .if(index == selectedIndex) { 
+                                $0.foregroundColor(.black)
                             }
+                            .cornerRadius(10)
                             .padding(.horizontal, 10)
                         }
 
