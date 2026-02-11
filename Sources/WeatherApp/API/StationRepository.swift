@@ -15,8 +15,11 @@ struct StationRepositoryImplementation: StationRepository {
 
     func getClosestStation(office: String, x: UInt, y: UInt) async throws -> StationProperties? {
         let response = try await requester.sendRequest(
-            to: "https://api.weather.gov/gridpoints/\(office)/\(x),\(y)/stations?limit=1",
-            headers: ["Accept": "application/geo+json"]
+            to: "https://api.weather.gov/gridpoints/\(office)/\(x),\(y)/stations",
+            headers: [
+                "Accept": "application/geo+json",
+                "Feature-Flags": "obs_station_provider"
+            ]
         )
 
         if response.code != 200 {
@@ -25,6 +28,6 @@ struct StationRepositoryImplementation: StationRepository {
 
         let result = try decoder.decode(GeoJson<StationProperties>.self, from: response.body)
 
-        return result.features.first?.properties
+        return result.features.first { !$0.properties.provider.isEmpty }?.properties
     }
 }

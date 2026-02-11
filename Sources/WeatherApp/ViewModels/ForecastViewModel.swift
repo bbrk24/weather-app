@@ -16,9 +16,9 @@ protocol ForecastViewModel {
 }
 
 final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.ObservableObject {
-    private let forecastRepository: ForecastRepository
-    private let alertRepository: AlertRepository
-    private let observationRepository: ObservationRepository
+    nonisolated private let forecastRepository: ForecastRepository
+    nonisolated private let alertRepository: AlertRepository
+    nonisolated private let observationRepository: ObservationRepository
 
     @SwiftCrossUI.Published var hourlyForecast: Forecast?
     @SwiftCrossUI.Published var dailyForecast: Forecast?
@@ -48,21 +48,73 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
         latestObservation = nil
 
         task = Task {
-            async let hourlyForecast = forecastRepository.getHourlyForecast(office: location.office, x: location.gridX, y: location.gridY)
-            async let dailyForecast = forecastRepository.getDailyForecast(office: location.office, x: location.gridX, y: location.gridY)
-            async let alerts = alertRepository.getAlerts(zone: location.zone)
-            async let latestObservation = observationRepository.getLatestObservation(station: location.station)
+            await withTaskGroup(of: Error?.self) { group in
+                group.addTask {
+                    do {
+                        let hourlyForecast = try await self.forecastRepository.getHourlyForecast(office: location.office, x: location.gridX, y: location.gridY)
+                        await MainActor.run {
+                            self.hourlyForecast = hourlyForecast
+                        }
+                        return nil
+                    } catch {
+                        return error
+                    }
+                }
 
-            do {
-                (self.hourlyForecast, self.dailyForecast, self.alerts, self.latestObservation) = try await (hourlyForecast, dailyForecast, alerts, latestObservation)
-            } catch AFError.explicitlyCancelled {
-                return
-            } catch {
-                self.error = error
-                debugPrint(error)
+                group.addTask {
+                    do {
+                        let dailyForecast = try await self.forecastRepository.getDailyForecast(office: location.office, x: location.gridX, y: location.gridY)
+                        await MainActor.run {
+                            self.dailyForecast = dailyForecast
+                        }
+                        return nil
+                    } catch {
+                        return error
+                    }
+                }
+
+                group.addTask {
+                    do {
+                        let alerts = try await self.alertRepository.getAlerts(zone: location.zone)
+                        await MainActor.run {
+                            self.alerts = alerts
+                        }
+                        return nil
+                    } catch {
+                        return error
+                    }
+                }
+
+                group.addTask {
+                    do {
+                        let latestObservation = try await self.observationRepository.getLatestObservation(station: location.station)
+                        await MainActor.run {
+                            self.latestObservation = latestObservation
+                        }
+                        return nil
+                    } catch {
+                        return error
+                    }
+                }
+
+                var error: Error?
+                for await maybeError in group {
+                    error = error ?? maybeError
+                }
+
+                if let error {
+                    switch error {
+                    case AFError.explicitlyCancelled:
+                        // Task was cancelled, don't continue
+                        return
+                    default:
+                        debugPrint(error)
+                        self.error = error
+                    }
+                }
+
+                task = nil
             }
-
-            task = nil
         }
     }
 }

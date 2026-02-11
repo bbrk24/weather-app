@@ -62,6 +62,7 @@ struct AlertProperties: Decodable, Identifiable {
 // MARK: Stations
 struct StationProperties: Decodable {
     var stationIdentifier: String
+    var provider: String
 }
 
 // MARK: Observations
