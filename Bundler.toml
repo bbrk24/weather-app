@@ -1,0 +1,9 @@
+format_version = 2
+
+[apps.WeatherApp]
+identifier = "com.bbrk24.WeatherApp"
+product = "WeatherApp"
+version = "1.0"
+license = "MPL-2.0"
+category = "public.app-category.weather"
+

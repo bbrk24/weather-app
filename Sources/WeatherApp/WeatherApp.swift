@@ -14,6 +14,10 @@ public struct WeatherApp: App {
             ContentView()
         }
     }
+    
+    static var version: String {
+        metadata?.version ?? "1.0"
+    }
 }
 
 extension WeatherApp {

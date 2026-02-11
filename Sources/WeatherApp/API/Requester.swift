@@ -40,10 +40,11 @@ final class RequesterImplementation: Requester {
 
     private static let emptyData = Data()
 
+    @MainActor
     init() {
         session.sessionConfiguration.headers.add(
             name: "User-Agent", 
-            value: "Weather App/1.0 (github.com/bbrk24/weather-app; bbrk24@gmail.com) Alamofire/\(AFInfo.version)"
+            value: "Weather App/\(WeatherApp.version) (github.com/bbrk24/weather-app; bbrk24@gmail.com) Alamofire/\(AFInfo.version)"
         )
     }
 

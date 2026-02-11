@@ -135,8 +135,8 @@ struct ForecastView: View {
                         }
                         .background(Color.gray)
                         .cornerRadius(5)
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
                 }
 
                 if
