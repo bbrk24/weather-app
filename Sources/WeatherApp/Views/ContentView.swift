@@ -51,7 +51,7 @@ struct ContentView: View {
                     .padding(.vertical)
                 }
             } detail: {
-                if selectedIndex < locations.count {
+                if locations.indices.contains(selectedIndex) {
                     ForecastView(location: $locations[selectedIndex])
                 }
             }
