@@ -25,7 +25,7 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
     @SwiftCrossUI.Published var error: Error?
     @SwiftCrossUI.Published var alerts: [AlertProperties]?
     @SwiftCrossUI.Published var latestObservation: Observation?
-    private var task: Task<Void, Never>?
+    @SwiftCrossUI.Published private var task: Task<Void, Never>?
     var isLoading: Bool { task != nil }
 
     init(
@@ -113,7 +113,7 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
                     }
                 }
 
-                task = nil
+                self.task = nil
             }
         }
     }
