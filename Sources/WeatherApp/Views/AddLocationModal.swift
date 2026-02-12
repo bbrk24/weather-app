@@ -11,7 +11,8 @@ struct AddLocationModal: View {
         VStack {
             ZStack(alignment: .top) {
                 HStack {
-                    Button("x", action: hide)
+                    // TODO: Figure out the layout bug that puts this button in the wrong place
+                    // Button("x", action: hide)
 
                     Spacer()
                 }
@@ -50,7 +51,5 @@ struct AddLocationModal: View {
             )
         }
         .padding()
-        .background(Color.adaptive(light: .white, dark: .black))
-        .cornerRadius(10)
     }
 }

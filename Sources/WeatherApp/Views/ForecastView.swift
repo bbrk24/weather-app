@@ -164,18 +164,15 @@ struct ForecastView: View {
                                 Text(period.name)
                                     .font(.headline)
 
-                                ZStack {
+                                HStack {
                                     ZStack(alignment: .leading) {
                                         Color.clear
 
                                         Text(period.shortForecast)
                                     }
 
-                                    ZStack(alignment: .trailing) {
-                                        Color.clear
-
-                                        Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
-                                    }
+                                    Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
+                                        .fixedSize(horizontal: true, vertical: false)
                                 }
                                 .font(.callout)
                             }
@@ -183,7 +180,8 @@ struct ForecastView: View {
                             .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
                             .foregroundColor(period.isDaytime ? foregroundColor : .white)
                             .cornerRadius(10)
-                            .frame(width: 450)
+                            .frame(maxWidth: 450)
+                            .padding(.horizontal)
                         }
                     }
                     .padding(.bottom)
