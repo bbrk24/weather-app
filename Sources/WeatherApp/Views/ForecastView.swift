@@ -196,7 +196,10 @@ struct ForecastView: View {
                 ZStack {
                     Color.gray.opacity(0.5)
                         .onTapGesture {
-                            modalAlerts = []
+                            // Work around a bug in GtkBackend
+                            DispatchQueue.main.async {
+                                modalAlerts = []
+                            }
                         }
                     
                     VStack(alignment: .leading) {

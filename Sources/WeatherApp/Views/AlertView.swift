@@ -68,7 +68,7 @@ struct AlertView: View {
                 }
             }
         }
-        .frame(minWidth: 500)
+        .frame(idealWidth: 500)
         .fixedSize(horizontal: true, vertical: false)
         .padding()
         .background(Color.gray.opacity(0.3))

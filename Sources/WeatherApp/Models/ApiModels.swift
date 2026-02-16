@@ -6,6 +6,11 @@ struct RelativeLocation: Decodable {
     var state: String
 }
 
+struct AstronomicalData: Decodable {
+    var sunrise: Date
+    var sunset: Date
+}
+
 struct LocationInfo: Decodable {
     var forecast: URL
     var relativeLocation: RelativeLocation
@@ -13,6 +18,7 @@ struct LocationInfo: Decodable {
     var gridX: UInt
     var gridY: UInt
     var forecastZone: URL
+    var astronomicalData: AstronomicalData
 }
 
 // MARK: Forecast
