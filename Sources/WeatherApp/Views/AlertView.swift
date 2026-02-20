@@ -6,10 +6,10 @@ struct AlertView: View {
     @State var expanded = false
 
     static let dateTimeFormatter = Date.FormatStyle(locale: .init(identifier: "en-US"))
-        .month().day().hour()
+        .month().day().hour().minute()
     
     static let timeOnlyFormatter = Date.FormatStyle(locale: .init(identifier: "en-US"))
-        .hour()
+        .hour().minute()
 
     var body: some View {
         VStack(alignment: .leading) {
