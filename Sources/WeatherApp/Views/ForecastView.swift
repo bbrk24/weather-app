@@ -10,8 +10,14 @@ struct ForecastView: View {
 
     @Environment(\.suggestedForegroundColor) var foregroundColor
 
-    static let hourFormatter = Date.FormatStyle().hour()
-    static let timeFormatter = Date.FormatStyle().hour().minute()
+    static let calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .autoupdatingCurrent
+        return calendar
+    }()
+
+    static let hourFormatter = Date.FormatStyle(calendar: calendar).hour()
+    static let timeFormatter = Date.FormatStyle(calendar: calendar).hour().minute()
 
     static let dayBackgroundColor = Color.adaptive(light: Color.blue, dark: Color(red: 0.0, green: 0.0, blue: 0.8))
     static let nightBackgroundColor = Color(red: 0.1, green: 0.1, blue: 0.2)
@@ -108,7 +114,13 @@ struct ForecastView: View {
                 }
                 .padding([.horizontal, .top])
 
-                if let hourlyForecast = viewModel.hourlyForecast {
+                if
+                    let hourlyForecast = viewModel.hourlyForecast,
+                    let astronomicalData = viewModel.astronomicalData
+                {
+                    let startOfSunriseDay = Self.calendar.startOfDay(for: astronomicalData.sunrise)
+                    let startOfSunsetDay = Self.calendar.startOfDay(for: astronomicalData.sunset)
+
                     ScrollView(.horizontal) {
                         HStack(alignment: .bottom, spacing: 0) {
                             VStack {
@@ -118,7 +130,13 @@ struct ForecastView: View {
                             }
                             .padding(6)
 
-                            ForEach(hourlyForecast.periods.prefix(24), id: \.startTime) { period in
+                            ForEach(hourlyForecast.periods.drop(while: { $0.startTime + 3600 < .now }).prefix(24), id: \.startTime) { period in
+                                let startOfDay = Self.calendar.startOfDay(for: period.startTime)
+                                let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
+                                let isBeforeSunrise = startOfSunriseDay + timeOfDay < astronomicalData.sunrise
+                                let isAfterSunset = startOfSunsetDay + timeOfDay > astronomicalData.sunset
+                                let isDaytime = !(isBeforeSunrise || isAfterSunset)
+
                                 VStack {
                                     Text(ForecastView.hourFormatter.format(period.startTime))
 
@@ -129,8 +147,8 @@ struct ForecastView: View {
                                     Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
                                 }
                                 .padding(6)
-                                .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
-                                .foregroundColor(period.isDaytime ? foregroundColor : .white)
+                                .background(isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
+                                .foregroundColor(isDaytime ? foregroundColor : .white)
                             }
                         }
                         .background(Color.gray)

@@ -1,4 +1,5 @@
 import Foundation
+import Alamofire
 
 protocol AlertRepository: Sendable {
     func getAlerts(zone: String) async throws -> [AlertProperties]
@@ -23,7 +24,7 @@ struct AlertRepositoryImplementation: AlertRepository {
             throw HttpError(response: response)
         }
 
-        let result = try decoder.decode(GeoJson<AlertProperties>.self, from: response.body)
+        let result = try decoder.decode(GeoJson<Empty, AlertProperties>.self, from: response.body)
 
         return result.features.map(\.properties)
     }

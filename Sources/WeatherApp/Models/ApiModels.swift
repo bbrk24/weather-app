@@ -45,12 +45,36 @@ struct Forecast: Decodable {
 }
 
 // MARK: Alerts
-struct Feature<Properties: Decodable>: Decodable {
+struct Feature<Geometry: Decodable & Sendable, Properties: Decodable & Sendable>: Decodable {
+    var geometry: Geometry
     var properties: Properties
 }
 
-struct GeoJson<Properties: Decodable>: Decodable {
-    var features: [Feature<Properties>]
+struct PointGeometry: Decodable {
+    var coordinates: (Float, Float)
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let coordinatesArray = try container.decode([Float].self, forKey: .coordinates)
+        if coordinatesArray.count != 2 {
+            throw DecodingError.typeMismatch(
+                (Float, Float).self,
+                .init(
+                    codingPath: container.codingPath + CollectionOfOne(CodingKeys.coordinates as any CodingKey),
+                    debugDescription: "Coordinates array has \(coordinatesArray.count) elements (expected 2)"
+                )
+            )
+        }
+        coordinates = (coordinatesArray[0], coordinatesArray[1])
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case coordinates
+    }
+}
+
+struct GeoJson<Geometry: Decodable & Sendable, Properties: Decodable & Sendable>: Decodable {
+    var features: [Feature<Geometry, Properties>]
 }
 
 struct AlertProperties: Decodable, Identifiable {

@@ -58,7 +58,8 @@ extension WeatherApp {
                 ForecastViewModelImplementation(
                     forecastRepository: r.resolve(),
                     alertRepository: r.resolve(),
-                    observationRepository: r.resolve()
+                    observationRepository: r.resolve(),
+                    locationInfoRepository: r.resolve()
                 )
             }
 

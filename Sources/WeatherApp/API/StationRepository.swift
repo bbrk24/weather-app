@@ -1,4 +1,5 @@
 import Foundation
+import Alamofire
 
 protocol StationRepository: Sendable {
     func getClosestStation(office: String, x: UInt, y: UInt) async throws -> StationProperties?
@@ -26,7 +27,7 @@ struct StationRepositoryImplementation: StationRepository {
             throw HttpError(response: response)
         }
 
-        let result = try decoder.decode(GeoJson<StationProperties>.self, from: response.body)
+        let result = try decoder.decode(GeoJson<Empty, StationProperties>.self, from: response.body)
 
         return result.features.first { !$0.properties.provider.isEmpty }?.properties
     }

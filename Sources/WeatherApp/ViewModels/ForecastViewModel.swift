@@ -9,6 +9,7 @@ protocol ForecastViewModel {
     var dailyForecast: Forecast? { get }
     var alerts: [AlertProperties]? { get }
     var latestObservation: Observation? { get }
+    var astronomicalData: AstronomicalData? { get }
     var error: Error? { get }
     var isLoading: Bool { get }
 
@@ -19,23 +20,27 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
     nonisolated private let forecastRepository: ForecastRepository
     nonisolated private let alertRepository: AlertRepository
     nonisolated private let observationRepository: ObservationRepository
+    nonisolated private let locationInfoRepository: LocationInfoRepository
 
     @SwiftCrossUI.Published var hourlyForecast: Forecast?
     @SwiftCrossUI.Published var dailyForecast: Forecast?
     @SwiftCrossUI.Published var error: Error?
     @SwiftCrossUI.Published var alerts: [AlertProperties]?
     @SwiftCrossUI.Published var latestObservation: Observation?
+    @SwiftCrossUI.Published var astronomicalData: AstronomicalData?
     @SwiftCrossUI.Published private var task: Task<Void, Never>?
     var isLoading: Bool { task != nil }
 
     init(
         forecastRepository: ForecastRepository,
         alertRepository: AlertRepository,
-        observationRepository: ObservationRepository
+        observationRepository: ObservationRepository,
+        locationInfoRepository: LocationInfoRepository
     ) {
         self.forecastRepository = forecastRepository
         self.alertRepository = alertRepository
         self.observationRepository = observationRepository
+        self.locationInfoRepository = locationInfoRepository
     }
 
     func loadForecasts(location: StoredLocation) {
@@ -87,9 +92,21 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
 
                 group.addTask {
                     do {
-                        let latestObservation = try await self.observationRepository.getLatestObservation(station: location.station)
-                        await MainActor.run {
-                            self.latestObservation = latestObservation
+                        if let latestObservation = try await self.observationRepository.getLatestObservation(station: location.station) {
+                            async let assignment = MainActor.run {
+                                self.latestObservation = latestObservation.properties
+                            }
+                            
+                            let locationInfo = try await self.locationInfoRepository.getLocationInfo(
+                                lat: latestObservation.geometry.coordinates.1,
+                                long: latestObservation.geometry.coordinates.0
+                            )
+
+                            await assignment
+
+                            await MainActor.run {
+                                self.astronomicalData = locationInfo.astronomicalData
+                            }
                         }
                         return nil
                     } catch {
