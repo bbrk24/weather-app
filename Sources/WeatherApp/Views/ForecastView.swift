@@ -130,7 +130,7 @@ struct ForecastView: View {
                             }
                             .padding(6)
 
-                            ForEach(hourlyForecast.periods.drop(while: { $0.startTime + 3600 < .now }).prefix(24), id: \.startTime) { period in
+                            ForEach(hourlyForecast.periods.drop(while: { $0.endTime <= .now }).prefix(24), id: \.startTime) { period in
                                 let startOfDay = Self.calendar.startOfDay(for: period.startTime)
                                 let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
                                 let isBeforeSunrise = startOfSunriseDay + timeOfDay < astronomicalData.sunrise

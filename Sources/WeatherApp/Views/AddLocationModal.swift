@@ -2,10 +2,11 @@ import SwiftCrossUI
 
 struct AddLocationModal: View {
     var error: String?
-    var onSubmit: (Float, Float) -> Void
+    var onSubmit: (Float, Float) async -> Void
     var hide: @MainActor () -> Void
     @State var lat: Float? = nil
     @State var long: Float? = nil
+    @State var task: Task<Void, Never>? = nil
 
     var body: some View {
         VStack {
@@ -34,7 +35,9 @@ struct AddLocationModal: View {
 
             FloatInputView(placeholder: "Longitude", value: $long)
 
-            if let error {
+            if task != nil {
+                ProgressView()
+            } else if let error {
                 Text(error)
                     .font(.body)
                     .foregroundColor(.red)
@@ -42,14 +45,21 @@ struct AddLocationModal: View {
 
             Button("Go!") {
                 if let lat, let long {
-                    onSubmit(lat, long)
+                    task = Task {
+                        defer { task = nil }
+                        await onSubmit(lat, long)
+                    }
                 }
             }
             .disabled(
                 (lat.map { $0 < -90.0 || $0 > 90.0 || $0.isNaN } ?? true)
                 || (long.map { $0 <= -180.0 || $0 > 180.0 || $0.isNaN } ?? true)
+                || task != nil
             )
         }
         .padding()
+        .onDisappear {
+            task?.cancel()
+        }
     }
 }

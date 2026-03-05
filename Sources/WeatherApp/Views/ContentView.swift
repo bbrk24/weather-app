@@ -59,31 +59,29 @@ struct ContentView: View {
                 AddLocationModal(
                     error: error,
                     onSubmit: { lat, long in
-                        Task {
-                            error = nil
-                            do {
-                                let (newLocation, station) = try await viewModel.searchLocationInfo(lat: lat, long: long)
-                                guard let station else {
-                                    error = "Could not determine nearest observation station to given location."
-                                    return
-                                }
+                        error = nil
+                        do {
+                            let (newLocation, station) = try await viewModel.searchLocationInfo(lat: lat, long: long)
+                            guard let station else {
+                                error = "Could not determine nearest observation station to given location."
+                                return
+                            }
 
-                                let stored = StoredLocation(locationInfo: newLocation, station: station.stationIdentifier)
-                                if locations.contains(where: { $0.id == stored.id }) {
-                                    error = "This location has already been added."
-                                } else {
-                                    locations.append(stored)
-                                    selectedIndex = locations.count - 1
-                                    showModal = false
-                                }
-                            } catch {
-                                debugPrint(error)
-                                if let he = error as? HttpError,
-                                    he.response.code == 404 {
-                                    self.error = "Invalid coordinates. Only locations inside the US are accepted."
-                                } else {
-                                    self.error = "\(error)"
-                                }
+                            let stored = StoredLocation(locationInfo: newLocation, station: station.stationIdentifier)
+                            if locations.contains(where: { $0.id == stored.id }) {
+                                error = "This location has already been added."
+                            } else {
+                                locations.append(stored)
+                                selectedIndex = locations.count - 1
+                                showModal = false
+                            }
+                        } catch {
+                            debugPrint(error)
+                            if let he = error as? HttpError,
+                                he.response.code == 404 {
+                                self.error = "Invalid coordinates. Only locations inside the US are accepted."
+                            } else {
+                                self.error = "\(error)"
                             }
                         }
                     },

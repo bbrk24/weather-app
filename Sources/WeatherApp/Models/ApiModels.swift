@@ -30,6 +30,7 @@ struct ValueWithUnit: Decodable {
 struct ForecastPeriod: Decodable {
     var name: String
     var startTime: Date
+    var endTime: Date
     var isDaytime: Bool
     var temperature: ValueWithUnit
     var probabilityOfPrecipitation: ValueWithUnit
