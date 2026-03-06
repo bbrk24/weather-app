@@ -120,6 +120,8 @@ struct ForecastView: View {
                 {
                     let startOfSunriseDay = Self.calendar.startOfDay(for: astronomicalData.sunrise)
                     let startOfSunsetDay = Self.calendar.startOfDay(for: astronomicalData.sunset)
+                    let sunriseTimeOfDay = astronomicalData.sunrise.timeIntervalSince(startOfSunriseDay)
+                    let sunsetTimeOfDay = astronomicalData.sunset.timeIntervalSince(startOfSunsetDay)
 
                     ScrollView(.horizontal) {
                         HStack(alignment: .bottom, spacing: 0) {
@@ -133,9 +135,9 @@ struct ForecastView: View {
                             ForEach(hourlyForecast.periods.drop(while: { $0.endTime <= .now }).prefix(24), id: \.startTime) { period in
                                 let startOfDay = Self.calendar.startOfDay(for: period.startTime)
                                 let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
-                                let isBeforeSunrise = startOfSunriseDay + timeOfDay < astronomicalData.sunrise
-                                let isAfterSunset = startOfSunsetDay + timeOfDay > astronomicalData.sunset
-                                let isDaytime = !(isBeforeSunrise || isAfterSunset)
+                                let isBeforeSunrise = timeOfDay < sunriseTimeOfDay
+                                let isAfterSunset = timeOfDay > sunsetTimeOfDay
+                                let isDaytime = sunriseTimeOfDay < sunsetTimeOfDay ? !(isBeforeSunrise || isAfterSunset) : !(isBeforeSunrise && isAfterSunset)
 
                                 VStack {
                                     Text(ForecastView.hourFormatter.format(period.startTime))
@@ -198,7 +200,7 @@ struct ForecastView: View {
                             .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
                             .foregroundColor(period.isDaytime ? foregroundColor : .white)
                             .cornerRadius(10)
-                            .frame(maxWidth: 450)
+                            .frame(maxWidth: 500)
                             .padding(.horizontal)
                         }
                     }
