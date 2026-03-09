@@ -1,5 +1,5 @@
 {
-  "originHash" : "b6065a2614ab712544bbc4fbbf43f65cf13bfe9a9f4f0913479d1dd6f5287136",
+  "originHash" : "3daefc2dd32f5790b66ad1ed6a506417f2b931be6578b18d358ecf1c6c23ac21",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -42,7 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-cross-ui.git",
       "state" : {
-        "revision" : "0aef98964ed41ab79723fa5b9fdb3b51bc5ecfde"
+        "revision" : "ad1d28d33da3e6ecc04719521a70a769c1d0e463",
+        "version" : "0.3.0"
       }
     },
     {
@@ -122,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-windowsappsdk",
       "state" : {
-        "revision" : "c93d4a59889f0c0cfad8e42a977614485a2f4bc0",
-        "version" : "0.1.0"
+        "revision" : "3c06cb36da9711e24a76c35861e0b97702448015",
+        "version" : "0.1.1"
       }
     },
     {
