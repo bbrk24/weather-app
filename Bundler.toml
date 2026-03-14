@@ -7,3 +7,20 @@ version = "1.0"
 license = "MPL-2.0"
 category = "public.app-category.weather"
 
+[apps.WeatherApp.plist]
+NSLocationWhenInUseUsageDescription = "Your location is used to fetch local weather data."
+
+[[apps.WeatherApp.overlays]]
+condition = "platform(iOS)"
+
+[apps.WeatherApp.overlays.plist]
+UIRequiredDeviceCapabilities = "wifi"
+NSLocationWhenInUseUsageDescription = "Your location is used to fetch local weather data."
+
+[apps.WeatherApp.overlays.plist.UIApplicationSceneManifest]
+UIApplicationSupportsMultipleScenes = false
+
+[[apps.WeatherApp.overlays.plist.UIApplicationSceneManifest.UISceneConfigurations.UIWindowSceneSessionRoleApplication]]
+UISceneConfigurationName = "Main"
+UISceneDelegateClassName = "UIKitBackend.SceneDelegate"
+UISceneClassName = "UIWindowScene"

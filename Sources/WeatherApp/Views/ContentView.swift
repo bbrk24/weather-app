@@ -57,7 +57,7 @@ struct ContentView: View {
             }
             .sheet(isPresented: $showModal) {
                 AddLocationModal(
-                    error: error,
+                    error: $error,
                     onSubmit: { lat, long in
                         error = nil
                         do {

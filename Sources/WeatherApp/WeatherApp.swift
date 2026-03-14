@@ -83,6 +83,10 @@ extension WeatherApp {
                     decoder: r.resolve()
                 )
             }
+            
+            Service(.weak, LocationViewModel.self) { _ in
+                LocationViewModelImplementation()
+            }
         }
     }
 }

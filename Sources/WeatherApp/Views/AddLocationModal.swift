@@ -1,7 +1,10 @@
 import SwiftCrossUI
+import SCUIDependiject
 
 struct AddLocationModal: View {
-    var error: String?
+    let viewModel = Factory.shared.resolve(LocationViewModel.self)
+    
+    @Binding var error: String?
     var onSubmit: (Float, Float) async -> Void
     var hide: @MainActor () -> Void
     @State var lat: Float? = nil
@@ -30,6 +33,26 @@ struct AddLocationModal: View {
             )
             .multilineTextAlignment(.center)
             .font(.caption)
+            
+            if viewModel.showCurrentLocationButton {
+                Button("Use current location") {
+                    task = Task {
+                        defer { task = nil }
+                        do throws(LocationError) {
+                            let (lat, long) = try await viewModel.getCurrentLocation()
+                            
+                            self.lat = lat
+                            self.long = long
+                            
+                            await onSubmit(lat, long)
+                        } catch {
+                            debugPrint(error)
+                            self.error = error.description
+                        }
+                    }
+                }
+                .disabled(!viewModel.enableCurrentLocationButton || task != nil)
+            }
 
             FloatInputView(placeholder: "Latitude", value: $lat)
 
