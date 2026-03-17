@@ -11,7 +11,7 @@ func feelsLikeTemperature(period: ForecastPeriod) -> Float {
         let windMPH = NSString(string: period.windSpeed).doubleValue
         
         if period.temperature.value <= 10.0 && windMPH > MIN_WIND_CHILL_SPEED_MPH {
-            return tempCToF(windChill(period.temperature.value, windMPHToKMH(windMPH)))
+            return tempCToF(windChill(period.temperature.value, windMPH * KILOMETERS_PER_MILE))
         } else if let humidity = period.relativeHumidity?.value {
             return tempCToF(
                 australianApparentTemperature(

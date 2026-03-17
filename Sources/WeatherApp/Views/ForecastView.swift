@@ -78,21 +78,29 @@ struct ForecastView: View {
                                 Text(String(format: "Heat index: %.1f℉", tempCToF(heatIndex)))
                             }
 
-                            if
-                                observation.windChill.value == nil && observation.heatIndex.value == nil,
-                                let windSpeedKMH = observation.windSpeed.value,
-                                let humidity = observation.relativeHumidity.value
-                            {
-                                Text(
-                                    String(
-                                        format: "Feels like %.0f℉",
-                                        tempCToF(
-                                            australianApparentTemperature(
-                                                temperature,
-                                                windSpeedKMH / 3.6,
-                                                humidity
+                            if let windSpeedKMH = observation.windSpeed.value {
+                                if
+                                    observation.windChill.value == nil && observation.heatIndex.value == nil,
+                                    let humidity = observation.relativeHumidity.value
+                                {
+                                    Text(
+                                        String(
+                                            format: "Feels like %.0f℉",
+                                            tempCToF(
+                                                australianApparentTemperature(
+                                                    temperature,
+                                                    windSpeedKMH / 3.6,
+                                                    humidity
+                                                )
                                             )
                                         )
+                                    )
+                                }
+                                
+                                Text(
+                                    String(
+                                        format: "Wind speed: %.1f mph",
+                                        Double(windSpeedKMH) / KILOMETERS_PER_MILE
                                     )
                                 )
                             }
@@ -104,10 +112,8 @@ struct ForecastView: View {
                         .padding(11)
                         .background(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(
-                                    foregroundColor,
-                                    style: StrokeStyle(width: 1.5, cap: .round, join: .round)
-                                )
+                                .inset(by: 0.5)
+                                .stroke(foregroundColor)
                         )
                         .padding(.vertical)
                     }

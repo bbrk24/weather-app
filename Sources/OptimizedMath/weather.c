@@ -60,10 +60,6 @@ float tempCToF(float tempC) {
     return 1.8f * tempC + 32.0f;
 }
 
-double windMPHToKMH(double windMPH) {
-    return 1.609344 * windMPH;
-}
-
 float windMPHToMS(float windMPH) {
     return 0.44704f * windMPH;
 }

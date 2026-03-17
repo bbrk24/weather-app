@@ -29,7 +29,7 @@ extern float heatIndex(
 
 extern float tempCToF(float tempC);
 
-extern double windMPHToKMH(double windMPH);
+#define KILOMETERS_PER_MILE 1.609344
 
 extern float windMPHToMS(float windMPH);
 
