@@ -127,8 +127,13 @@ struct ForecastView: View {
                         HStack(alignment: .bottom, spacing: 0) {
                             VStack {
                                 Text("🌡️")
+                                    .help("Temperature")
+                                
                                 Text("🌧️")
+                                    .help("Chance of precipitation")
+                                
                                 Text("🤒")
+                                    .help("\"Feels like\" temperature")
                             }
                             .padding(6)
 
@@ -199,6 +204,7 @@ struct ForecastView: View {
                             .padding()
                             .background(period.isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
                             .foregroundColor(period.isDaytime ? foregroundColor : .white)
+                            .help(period.detailedForecast)
                             .cornerRadius(10)
                             .frame(maxWidth: 500)
                             .padding(.horizontal)

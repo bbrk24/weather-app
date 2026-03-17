@@ -37,6 +37,7 @@ struct ForecastPeriod: Decodable {
     var windSpeed: String
     var windDirection: String
     var shortForecast: String
+    var detailedForecast: String
     var dewPoint: ValueWithUnit?
     var relativeHumidity: ValueWithUnit?
 }
