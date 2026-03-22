@@ -1,3 +1,5 @@
+import Foundation
+
 struct LocationError: Error, CustomStringConvertible, CustomDebugStringConvertible {
     var underlyingError: NSError?
     var description: String
