@@ -7,8 +7,8 @@ struct RelativeLocation: Decodable {
 }
 
 struct AstronomicalData: Decodable {
-    var sunrise: Date
-    var sunset: Date
+    var sunrise: Date?
+    var sunset: Date?
 }
 
 struct LocationInfo: Decodable {

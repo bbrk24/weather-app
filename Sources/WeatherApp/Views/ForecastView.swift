@@ -124,10 +124,10 @@ struct ForecastView: View {
                     let hourlyForecast = viewModel.hourlyForecast,
                     let astronomicalData = viewModel.astronomicalData
                 {
-                    let startOfSunriseDay = Self.calendar.startOfDay(for: astronomicalData.sunrise)
-                    let startOfSunsetDay = Self.calendar.startOfDay(for: astronomicalData.sunset)
-                    let sunriseTimeOfDay = astronomicalData.sunrise.timeIntervalSince(startOfSunriseDay)
-                    let sunsetTimeOfDay = astronomicalData.sunset.timeIntervalSince(startOfSunsetDay)
+                    let startOfSunriseDay = astronomicalData.sunrise.map(Self.calendar.startOfDay(for:))
+                    let startOfSunsetDay = astronomicalData.sunset.map(Self.calendar.startOfDay(for:))
+                    let sunriseTimeOfDay = astronomicalData.sunrise?.timeIntervalSince(startOfSunriseDay!)
+                    let sunsetTimeOfDay = astronomicalData.sunset?.timeIntervalSince(startOfSunsetDay!)
 
                     ScrollView(.horizontal) {
                         HStack(alignment: .bottom, spacing: 0) {
@@ -146,9 +146,17 @@ struct ForecastView: View {
                             ForEach(hourlyForecast.periods.drop(while: { $0.endTime <= .now }).prefix(24), id: \.startTime) { period in
                                 let startOfDay = Self.calendar.startOfDay(for: period.startTime)
                                 let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
-                                let isBeforeSunrise = timeOfDay < sunriseTimeOfDay
-                                let isAfterSunset = timeOfDay > sunsetTimeOfDay
-                                let isDaytime = sunriseTimeOfDay < sunsetTimeOfDay ? !(isBeforeSunrise || isAfterSunset) : !(isBeforeSunrise && isAfterSunset)
+                                let isBeforeSunrise =
+                                    if let sunriseTimeOfDay { timeOfDay < sunriseTimeOfDay } else { false }
+                                let isAfterSunset =
+                                    if let sunsetTimeOfDay { timeOfDay > sunsetTimeOfDay } else { false }
+                                let isDaytime =
+                                    if let sunriseTimeOfDay, let sunsetTimeOfDay {
+                                        sunriseTimeOfDay < sunsetTimeOfDay ? !(isBeforeSunrise || isAfterSunset) : !(isBeforeSunrise && isAfterSunset)
+                                    } else {
+                                        // TODO: Check whether it's closer to the summer or winter solstice?
+                                        true
+                                    }
 
                                 VStack {
                                     Text(ForecastView.hourFormatter.format(period.startTime))
