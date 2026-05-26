@@ -159,13 +159,17 @@ struct ForecastView: View {
                                     }
 
                                 VStack {
-                                    Text(ForecastView.hourFormatter.format(period.startTime))
+                                    Group {
+                                        Text(ForecastView.hourFormatter.format(period.startTime))
 
-                                    Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
+                                        Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
 
-                                    Text(String(format: "%.0f%%", period.probabilityOfPrecipitation.value))
+                                        Text(String(format: "%.0f%%", period.probabilityOfPrecipitation.value))
 
-                                    Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
+                                        Text(String(format: "%.0f℉", feelsLikeTemperature(period: period)))
+                                    }
+                                    .lineLimit(1)
+                                    .fixedSize()
                                 }
                                 .padding(6)
                                 .background(isDaytime ? ForecastView.dayBackgroundColor : ForecastView.nightBackgroundColor)
