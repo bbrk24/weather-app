@@ -1,5 +1,6 @@
 import SwiftCrossUI
 
+#if canImport(UIKitBackend) || canImport(AndroidBackend)
 #if canImport(UIKitBackend)
 import UIKitBackend
 import UIKit
@@ -34,8 +35,80 @@ struct IconButton: UIViewRepresentable {
         }
     }
 }
+#else
+import AndroidBackend
+import AndroidKit
+import SwiftJava
 
-struct SplitView<Sidebar: View, Detail: View>: View {
+@JavaClass(
+    "com.bbrk24.weatherapp.CustomOnClickListener",
+    implements: AndroidKit.View.OnClickListener.self
+)
+class CustomOnClickListener: JavaObject {
+    @JavaMethod
+    convenience init(rawPointer: Int64, environment: JNIEnvironment? = nil)
+    
+    @JavaMethod
+    func getRawPointer() -> Int64
+}
+
+@JavaImplementation("com.bbrk24.weatherapp.CustomOnClickListener")
+extension CustomOnClickListener {
+    @JavaMethod
+    func nativeOnClick() {
+        let ptrInt = getRawPointer()
+        let ptr = UnsafePointer<() -> Void>(bitPattern: Int(ptrInt))
+        ptr?.pointee()
+    }
+    
+    @JavaMethod
+    func nativeFinalize() {
+        let ptrInt = getRawPointer()
+        if let ptr = UnsafeMutablePointer<() -> Void>(bitPattern: Int(ptrInt)) {
+            ptr.deinitialize(count: 1)
+            ptr.deallocate()
+        }
+    }
+}
+
+extension CustomOnClickListener {
+    convenience init(_ env: JNIEnvironment?, body: @escaping () -> Void) {
+        let ptr = UnsafeMutablePointer<() -> Void>.allocate(capacity: 1)
+        ptr.initialize(to: body)
+        self.init(rawPointer: Int64(Int(bitPattern: ptr)), environment: env)
+    }
+}
+
+struct IconButton: AndroidViewRepresentable {
+    var action: () -> Void
+    
+    func makeAndroidView(context: Self.Context) -> AndroidKit.ImageButton {
+        let button = AndroidKit.ImageButton(
+            context.environment.androidActivity,
+            environment: context.environment.jniEnv
+        )
+        
+        let Rdrawable = try! JavaClass<AndroidKit.R.drawable>()
+        button.setImageResource(Rdrawable.ic_dialog_map)
+        
+        return button
+    }
+    
+    func updateAndroidView(
+        _ view: AndroidKit.ImageButton,
+        context: Self.Context
+    ) {
+        view.setOnClickListener(
+            CustomOnClickListener(
+                context.environment.jniEnv,
+                body: action
+            ).as(AndroidKit.View.OnClickListener.self)
+        )
+    }
+}
+#endif
+
+struct SplitView<Sidebar: SwiftCrossUI.View, Detail: SwiftCrossUI.View>: SwiftCrossUI.View {
     var sidebar: Sidebar
     var detail: Detail
     @State var showSidebar = false
@@ -45,7 +118,7 @@ struct SplitView<Sidebar: View, Detail: View>: View {
         self.detail = detail()
     }
     
-    var body: some View {
+    var body: some SwiftCrossUI.View {
         VStack(alignment: .trailing) {
             IconButton { showSidebar = true }
                 .fixedSize(horizontal: true, vertical: true)

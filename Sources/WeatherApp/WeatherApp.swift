@@ -1,7 +1,18 @@
 import SwiftCrossUI
-import DefaultBackend
 import SCUIDependiject
 import Foundation
+
+#if canImport(AndroidBackend)
+// https://github.com/moreSwift/swift-cross-ui/issues/608
+import AndroidBackend
+#else
+import DefaultBackend
+#endif
+
+extension EnvironmentValues {
+    @Entry
+    var deviceClass: DeviceClass = .desktop
+}
 
 @main
 public struct WeatherApp: App {
@@ -12,6 +23,7 @@ public struct WeatherApp: App {
     public var body: some Scene {
         WindowGroup("Weather App") {
             ContentView()
+                .environment(\.deviceClass, backend.deviceClass)
         }
     }
     

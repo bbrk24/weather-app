@@ -9,15 +9,16 @@ struct ForecastView: View {
     @State var modalAlerts: [AlertProperties] = []
 
     @Environment(\.suggestedForegroundColor) var foregroundColor
+    @Environment(\.timeZone) var timeZone
+    @Environment(\.calendar) var calendar
 
-    static let calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = .autoupdatingCurrent
-        return calendar
-    }()
+    var hourFormatter: Date.FormatStyle {
+        Date.FormatStyle(calendar: calendar, timeZone: timeZone).hour()
+    }
 
-    static let hourFormatter = Date.FormatStyle(calendar: calendar).hour()
-    static let timeFormatter = Date.FormatStyle(calendar: calendar).hour().minute()
+    var timeFormatter: Date.FormatStyle {
+        Date.FormatStyle(calendar: calendar, timeZone: timeZone).hour().minute()
+    }
 
     static let dayBackgroundColor = Color.adaptive(light: Color.blue, dark: Color(red: 0.0, green: 0.0, blue: 0.8))
     static let nightBackgroundColor = Color(red: 0.1, green: 0.1, blue: 0.2)
@@ -60,7 +61,7 @@ struct ForecastView: View {
                     {
                         VStack(spacing: 0) {
                             Text(
-                                "Conditions at \(observation.stationName) as of \(ForecastView.timeFormatter.format(observation.timestamp))"
+                                "Conditions at \(observation.stationName) as of \(timeFormatter.format(observation.timestamp))"
                             )
                                 .font(.caption)
 
@@ -124,8 +125,8 @@ struct ForecastView: View {
                     let hourlyForecast = viewModel.hourlyForecast,
                     let astronomicalData = viewModel.astronomicalData
                 {
-                    let startOfSunriseDay = astronomicalData.sunrise.map(Self.calendar.startOfDay(for:))
-                    let startOfSunsetDay = astronomicalData.sunset.map(Self.calendar.startOfDay(for:))
+                    let startOfSunriseDay = astronomicalData.sunrise.map(calendar.startOfDay(for:))
+                    let startOfSunsetDay = astronomicalData.sunset.map(calendar.startOfDay(for:))
                     let sunriseTimeOfDay = astronomicalData.sunrise?.timeIntervalSince(startOfSunriseDay!)
                     let sunsetTimeOfDay = astronomicalData.sunset?.timeIntervalSince(startOfSunsetDay!)
 
@@ -144,7 +145,7 @@ struct ForecastView: View {
                             .padding(6)
 
                             ForEach(hourlyForecast.periods.drop(while: { $0.endTime <= .now }).prefix(24), id: \.startTime) { period in
-                                let startOfDay = Self.calendar.startOfDay(for: period.startTime)
+                                let startOfDay = calendar.startOfDay(for: period.startTime)
                                 let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
                                 let isBeforeSunrise =
                                     if let sunriseTimeOfDay { timeOfDay < sunriseTimeOfDay } else { false }
@@ -160,7 +161,7 @@ struct ForecastView: View {
 
                                 VStack {
                                     Group {
-                                        Text(ForecastView.hourFormatter.format(period.startTime))
+                                        Text(hourFormatter.format(period.startTime))
 
                                         Text(String(format: "%.0f℉", tempCToF(period.temperature.value)))
 
@@ -240,10 +241,7 @@ struct ForecastView: View {
                 ZStack {
                     Color.gray.opacity(0.5)
                         .onTapGesture {
-                            // Work around a bug in GtkBackend
-                            DispatchQueue.main.async {
-                                modalAlerts = []
-                            }
+                            modalAlerts = []
                         }
                     
                     VStack(alignment: .leading) {

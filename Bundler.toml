@@ -6,6 +6,7 @@ product = "WeatherApp"
 version = "1.0"
 license = "MPL-2.0"
 category = "public.app-category.weather"
+android.permissions = ["INTERNET"]
 
 [apps.WeatherApp.plist]
 NSLocationWhenInUseUsageDescription = "Your location is used to fetch local weather data."
@@ -24,3 +25,6 @@ UIApplicationSupportsMultipleScenes = false
 UISceneConfigurationName = "Main"
 UISceneDelegateClassName = "UIKitBackend.SceneDelegate"
 UISceneClassName = "UIWindowScene"
+
+[targets.WeatherApp.android]
+kotlin_directory = "Kotlin"

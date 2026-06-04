@@ -3,13 +3,22 @@ import Foundation
 
 struct AlertView: View {
     var alert: AlertProperties
+    
     @State var expanded = false
 
-    static let dateTimeFormatter = Date.FormatStyle(locale: .init(identifier: "en-US"))
-        .month().day().hour().minute()
-    
-    static let timeOnlyFormatter = Date.FormatStyle(locale: .init(identifier: "en-US"))
-        .hour().minute()
+    @Environment(\.calendar) var calendar
+    @Environment(\.timeZone) var timeZone
+    @Environment(\.deviceClass) var deviceClass
+
+    var dateTimeFormatter: Date.FormatStyle {
+        Date.FormatStyle(locale: .init(identifier: "en-US"), timeZone: timeZone)
+            .month().day().hour().minute()
+    }
+
+    var timeOnlyFormatter: Date.FormatStyle {
+        Date.FormatStyle(locale: .init(identifier: "en-US"), timeZone: timeZone)
+            .hour().minute()
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -25,19 +34,19 @@ struct AlertView: View {
 
             switch (alert.onset, alert.ends) {
             case (let onset?, let ends?):
-                if Calendar.current.isDate(onset, inSameDayAs: ends) {
+                if calendar.isDate(onset, inSameDayAs: ends) {
                     Text(
-                        "\(AlertView.dateTimeFormatter.format(onset)) to \(AlertView.timeOnlyFormatter.format(ends))"
+                        "\(dateTimeFormatter.format(onset)) to \(timeOnlyFormatter.format(ends))"
                     )
                 } else {
                     Text(
-                        "\(AlertView.dateTimeFormatter.format(onset)) to \(AlertView.dateTimeFormatter.format(ends))"
+                        "\(dateTimeFormatter.format(onset)) to \(dateTimeFormatter.format(ends))"
                     )
                 }
             case (let onset?, nil):
-                Text("Starting \(AlertView.dateTimeFormatter.format(onset))")
+                Text("Starting \(dateTimeFormatter.format(onset))")
             case (nil, let ends?):
-                Text("Until \(AlertView.dateTimeFormatter.format(ends))")
+                Text("Until \(dateTimeFormatter.format(ends))")
             case (nil, nil):
                 Text("–")
             }
@@ -68,9 +77,12 @@ struct AlertView: View {
                 }
             }
         }
-        .frame(idealWidth: 550)
-        .fixedSize(horizontal: true, vertical: false)
-        .padding()
+        .if(deviceClass == .desktop) {
+            $0
+                .frame(idealWidth: 555)
+                .fixedSize(horizontal: true, vertical: false)
+        }
+        .padding(15)
         .background(Color.gray.opacity(0.3))
         .onTapGesture {
             expanded.toggle()
