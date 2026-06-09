@@ -150,6 +150,108 @@ nonisolated final class LocationViewModelImplementation: NSObject, LocationViewM
         }
     }
 }
+#elseif os(Android)
+import AndroidBackend
+import AndroidLocation
+import SwiftJava
+
+@JavaClass("com.bbrk24.weatherapp.LocationHandler")
+class LocationHandler: JavaObject {
+    @JavaMethod
+    convenience init(
+        _ activity: FragmentActivity!,
+        environment: JNIEnvironment? = nil
+    )
+    
+    @JavaMethod
+    func hasLocationFeature() -> Bool
+    
+    @JavaMethod
+    func shouldEnableButton() -> Bool
+    
+    @JavaMethod
+    func requestLocation()
+    
+    @JavaMethod
+    func getSwiftCallbackPointer() -> Int64
+    
+    @JavaMethod
+    func setSwiftCallbackPointer(_ value: Int64)
+}
+
+@JavaImplementation("com.bbrk24.weatherapp.LocationHandler")
+extension LocationHandler {
+    @JavaMethod
+    func onLocationResult(
+        _ location: AndroidLocation.Location?,
+        _ error: JavaString?
+    ) {
+        let ptrInt = getSwiftCallbackPointer()
+        let ptr = UnsafeMutablePointer<(AndroidLocation.Location?, String?) -> Void>(bitPattern: Int(ptrInt))
+        ptr?.pointee(location, error?.toString())
+    }
+
+    @JavaMethod
+    func nativeFinalize() {
+        let ptrInt = getSwiftCallbackPointer()
+        if let ptr = UnsafeMutablePointer<(AndroidLocation.Location?, String?) -> Void>(bitPattern: Int(ptrInt)) {
+            ptr.deinitialize(count: 1)
+            ptr.deallocate()
+        }
+    }
+}
+
+extension LocationHandler {
+    func setCallback(_ body: ((AndroidLocation.Location?, String?) -> Void)?) {
+        nativeFinalize()
+        guard let body else {
+            setSwiftCallbackPointer(0)
+            return
+        }
+        let ptr = UnsafeMutablePointer<(AndroidLocation.Location?, String?) -> Void>.allocate(capacity: 1)
+        ptr.initialize(to: body)
+        setSwiftCallbackPointer(Int64(Int(bitPattern: ptr)))
+    }
+}
+
+final class LocationViewModelImplementation: LocationViewModel {
+    private let handler: LocationHandler
+    
+    init(handler: LocationHandler) {
+        self.handler = handler
+    }
+    
+    var showCurrentLocationButton: Bool { handler.hasLocationFeature() }
+    
+    var enableCurrentLocationButton: Bool { handler.shouldEnableButton() }
+    
+    func getCurrentLocation() async throws(LocationError) -> (lat: Float, long: Float) {
+        do {
+            return try await withCheckedThrowingContinuation { continuation in
+                handler.setCallback { location, errorText in
+                    if let location {
+                        continuation.resume(
+                            returning: (
+                                lat: Float(location.getLatitude()),
+                                long: Float(location.getLongitude())
+                            )
+                        )
+                    } else {
+                        continuation.resume(
+                            throwing: LocationError(
+                                description: errorText ?? "Location unavailable."
+                            )
+                        )
+                    }
+                }
+                
+                handler.requestLocation()
+            }
+        } catch {
+            throw error as! LocationError
+        }
+    }
+}
 #else
 final class LocationViewModelImplementation: LocationViewModel {
     let showCurrentLocationButton = false

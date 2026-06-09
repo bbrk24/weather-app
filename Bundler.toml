@@ -6,7 +6,10 @@ product = "WeatherApp"
 version = "1.0"
 license = "MPL-2.0"
 category = "public.app-category.weather"
-android.permissions = ["INTERNET"]
+
+[apps.WeatherApp.android]
+permissions = ["INTERNET", "ACCESS_COARSE_LOCATION"]
+min_sdk = 31
 
 [apps.WeatherApp.plist]
 NSLocationWhenInUseUsageDescription = "Your location is used to fetch local weather data."

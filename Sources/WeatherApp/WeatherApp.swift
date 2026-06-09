@@ -2,7 +2,7 @@ import SwiftCrossUI
 import SCUIDependiject
 import Foundation
 
-#if canImport(AndroidBackend)
+#if os(Android)
 // https://github.com/moreSwift/swift-cross-ui/issues/608
 import AndroidBackend
 #else
@@ -14,8 +14,24 @@ extension EnvironmentValues {
     var deviceClass: DeviceClass = .desktop
 }
 
+#if os(Android)
+import SwiftJava
+
+struct WeatherActivityDelegate: ActivityDelegate {
+    func onCreate(of activity: FragmentActivity, env: JNIEnvironment?) {
+        Factory.register {
+            Service(constant: LocationHandler(activity, environment: env), LocationHandler.self)
+        }
+    }
+}
+#endif
+
 @main
 public struct WeatherApp: App {
+    #if os(Android)
+    public let backend = AndroidBackend(delegate: WeatherActivityDelegate())
+    #endif
+    
     public init() {
         setupDI()
     }
@@ -96,9 +112,17 @@ extension WeatherApp {
                 )
             }
             
+            #if os(Android)
+            Service(.weak, LocationViewModel.self) { r in
+                LocationViewModelImplementation(
+                    handler: r.resolve()
+                )
+            }
+            #else
             Service(.weak, LocationViewModel.self) { _ in
                 LocationViewModelImplementation()
             }
+            #endif
         }
     }
 }

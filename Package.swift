@@ -6,7 +6,7 @@ let package = Package(
     name: "WeatherApp",
     platforms: [.macOS(.v13), .iOS(.v16)],
     dependencies: [
-        .package(url: "https://github.com/moreSwift/swift-cross-ui.git", .upToNextMinor(from: "0.7.0")),
+        .package(url: "https://github.com/moreSwift/swift-cross-ui.git", revision: "14b66cc089b76b967c6b2c36c6ec410099193ba1"),
         .package(url: "https://github.com/Alamofire/Alamofire.git", .upToNextMajor(from: "5.11.1")),
     ],
     targets: [
