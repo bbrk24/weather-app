@@ -1,5 +1,5 @@
 {
-  "originHash" : "836de4b53e8a6fa6832893863ffb0bf0dff707f2708b2448bae8971d47e10788",
+  "originHash" : "7aaf0a094b62c406ffb29e022440bc3e653ae4d07e9bb00b406a9f86c9d9a4d7",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/AndroidKit",
       "state" : {
-        "revision" : "ed371b3becaab639cada60f5c65f0ee8f0d6d149",
-        "version" : "0.8.0"
+        "revision" : "d5142b5a9b90fa940be54a2a41d7fd5842f21111",
+        "version" : "0.8.1"
       }
     },
     {
@@ -78,7 +78,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-cross-ui.git",
       "state" : {
-        "revision" : "14b66cc089b76b967c6b2c36c6ec410099193ba1"
+        "revision" : "0f77f45889574f035d82540a276a007e11714439"
       }
     },
     {
@@ -158,8 +158,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-system",
       "state" : {
-        "revision" : "669763cfd5806a67e21972d7e5e2d6b80b1ea985",
-        "version" : "1.6.5"
+        "revision" : "7502b711c92a17741fa625d722b0ccbd595d8ed1",
+        "version" : "1.7.2"
       }
     },
     {
