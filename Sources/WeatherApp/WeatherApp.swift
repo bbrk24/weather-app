@@ -9,11 +9,6 @@ import AndroidBackend
 import DefaultBackend
 #endif
 
-extension EnvironmentValues {
-    @Entry
-    var deviceClass: DeviceClass = .desktop
-}
-
 #if os(Android)
 import SwiftJava
 
@@ -39,7 +34,6 @@ public struct WeatherApp: App {
     public var body: some Scene {
         WindowGroup("Weather App") {
             ContentView()
-                .environment(\.deviceClass, backend.deviceClass)
         }
     }
     
