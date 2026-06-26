@@ -18,6 +18,7 @@ struct LocationInfo: Decodable {
     var gridX: UInt
     var gridY: UInt
     var forecastZone: URL
+    var county: URL
     var astronomicalData: AstronomicalData
 }
 

@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 
 protocol AlertRepository: Sendable {
-    func getAlerts(zone: String) async throws -> [AlertProperties]
+    func getAlerts(zone: String, county: String) async throws -> [AlertProperties]
 }
 
 struct AlertRepositoryImplementation: AlertRepository {
@@ -14,9 +14,9 @@ struct AlertRepositoryImplementation: AlertRepository {
         self.decoder = decoder
     }
 
-    func getAlerts(zone: String) async throws -> [AlertProperties] {
+    private func getAlertProperties(zoneOrCounty: String) async throws -> [AlertProperties] {
         let response = try await requester.sendRequest(
-            to: "https://api.weather.gov/alerts/active/zone/\(zone)",
+            to: "https://api.weather.gov/alerts/active/zone/\(zoneOrCounty)",
             headers: ["Accept": "application/geo+json"]
         )
 
@@ -27,5 +27,12 @@ struct AlertRepositoryImplementation: AlertRepository {
         let result = try decoder.decode(GeoJson<Empty, AlertProperties>.self, from: response.body)
 
         return result.features.map(\.properties)
+    }
+
+    func getAlerts(zone: String, county: String) async throws -> [AlertProperties] {
+        async let countyProperties = getAlertProperties(zoneOrCounty: county)
+        async let zoneProperties = getAlertProperties(zoneOrCounty: zone)
+
+        return try await (countyProperties + zoneProperties).unique(by: \.id)
     }
 }

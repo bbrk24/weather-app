@@ -4,13 +4,14 @@ struct StoredLocation: Codable, Identifiable, Sendable {
     var cityName: String
     var customName: String
     var zone: String
+    var county: String
     var station: String
     var office: String
     var gridX: UInt
     var gridY: UInt
 
     var id: String {
-        "\(office);\(gridX),\(gridY);\(zone)"
+        "\(office);\(gridX),\(gridY);\(zone);\(county)"
     }
 
     var displayName: String {
@@ -23,6 +24,7 @@ struct StoredLocation: Codable, Identifiable, Sendable {
 
     init(locationInfo: LocationInfo, station: String) {
         self.zone = locationInfo.forecastZone.lastPathComponent
+        self.county = locationInfo.county.lastPathComponent
         self.office = locationInfo.gridId
         self.gridX = locationInfo.gridX
         self.gridY = locationInfo.gridY

@@ -23,3 +23,21 @@ func feelsLikeTemperature(period: ForecastPeriod) -> Float {
     
     return tempCToF(period.temperature.value)
 }
+
+extension Sequence {
+    consuming func unique<T: Hashable>(by keySelector: (Element) -> T) -> [Element] {
+        var seenIds = Set<T>()
+        var results = [Element]()
+
+        for element in self {
+            let id = keySelector(element)
+            print(id, seenIds)
+            if seenIds.insert(id).inserted {
+                print("Adding \(id) to \(seenIds)")
+                results.append(element)
+            }
+        }
+
+        return results
+    }
+}

@@ -80,7 +80,7 @@ final class ForecastViewModelImplementation: ForecastViewModel, SwiftCrossUI.Obs
 
                 group.addTask {
                     do {
-                        let alerts = try await self.alertRepository.getAlerts(zone: location.zone)
+                        let alerts = try await self.alertRepository.getAlerts(zone: location.zone, county: location.county)
                         await MainActor.run {
                             self.alerts = alerts
                         }
