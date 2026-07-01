@@ -125,11 +125,6 @@ struct ForecastView: View {
                     let hourlyForecast = viewModel.hourlyForecast,
                     let astronomicalData = viewModel.astronomicalData
                 {
-                    let startOfSunriseDay = astronomicalData.sunrise.map(calendar.startOfDay(for:))
-                    let startOfSunsetDay = astronomicalData.sunset.map(calendar.startOfDay(for:))
-                    let sunriseTimeOfDay = astronomicalData.sunrise?.timeIntervalSince(startOfSunriseDay!)
-                    let sunsetTimeOfDay = astronomicalData.sunset?.timeIntervalSince(startOfSunsetDay!)
-
                     ScrollView(.horizontal) {
                         HStack(alignment: .bottom, spacing: 0) {
                             VStack {
@@ -145,19 +140,11 @@ struct ForecastView: View {
                             .padding(6)
 
                             ForEach(hourlyForecast.periods.drop(while: { $0.endTime <= .now }).prefix(24), id: \.startTime) { period in
-                                let startOfDay = calendar.startOfDay(for: period.startTime)
-                                let timeOfDay = period.startTime.timeIntervalSince(startOfDay)
-                                let isBeforeSunrise =
-                                    if let sunriseTimeOfDay { timeOfDay < sunriseTimeOfDay } else { false }
-                                let isAfterSunset =
-                                    if let sunsetTimeOfDay { timeOfDay > sunsetTimeOfDay } else { false }
-                                let isDaytime =
-                                    if let sunriseTimeOfDay, let sunsetTimeOfDay {
-                                        sunriseTimeOfDay < sunsetTimeOfDay ? !(isBeforeSunrise || isAfterSunset) : !(isBeforeSunrise && isAfterSunset)
-                                    } else {
-                                        // TODO: Check whether it's closer to the summer or winter solstice?
-                                        true
-                                    }
+                                let isDaytime = isTimeInDaylight(
+                                    period.startTime,
+                                    astronomicalData: astronomicalData,
+                                    localCalendar: calendar
+                                )
 
                                 VStack {
                                     Group {

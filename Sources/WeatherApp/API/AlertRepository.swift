@@ -2,7 +2,7 @@ import Foundation
 import Alamofire
 
 protocol AlertRepository: Sendable {
-    func getAlerts(zone: String, county: String) async throws -> [AlertProperties]
+    func getAlerts(zone: String, county: String?) async throws -> [AlertProperties]
 }
 
 struct AlertRepositoryImplementation: AlertRepository {
@@ -29,7 +29,11 @@ struct AlertRepositoryImplementation: AlertRepository {
         return result.features.map(\.properties)
     }
 
-    func getAlerts(zone: String, county: String) async throws -> [AlertProperties] {
+    func getAlerts(zone: String, county: String?) async throws -> [AlertProperties] {
+        guard let county else {
+            return try await getAlertProperties(zoneOrCounty: zone)
+        }
+        
         async let countyProperties = getAlertProperties(zoneOrCounty: county)
         async let zoneProperties = getAlertProperties(zoneOrCounty: zone)
 

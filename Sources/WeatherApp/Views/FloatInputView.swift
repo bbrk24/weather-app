@@ -7,6 +7,7 @@ struct FloatInputView: View {
 
     var body: some View {
         TextField(placeholder ?? "", text: $text)
+            .textContentType(.decimal(signed: true))
             .onChange(of: text, initial: false) {
                 value = Float(text)
             }
