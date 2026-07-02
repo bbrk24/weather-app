@@ -3,13 +3,7 @@ import SCUIDependiject
 import Foundation
 
 #if os(Android)
-// https://github.com/moreSwift/swift-cross-ui/issues/608
 import AndroidBackend
-#else
-import DefaultBackend
-#endif
-
-#if os(Android)
 import SwiftJava
 
 struct WeatherActivityDelegate: ActivityDelegate {
@@ -19,6 +13,8 @@ struct WeatherActivityDelegate: ActivityDelegate {
         }
     }
 }
+#else
+import DefaultBackend
 #endif
 
 @main

@@ -1,5 +1,5 @@
 {
-  "originHash" : "191c2b775147d05c8ed7213f9c88f8549da86ecc9010a33af64c3fc96c6a43d1",
+  "originHash" : "b6e280aef8a75dbb765f6ded7e366f4ae0335dda055c85bc46e1d0b2d56da60d",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -78,7 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/moreSwift/swift-cross-ui.git",
       "state" : {
-        "revision" : "2c7df68e3aeb49c10b2416ab80b909972f04c304"
+        "revision" : "a6d206370812e3b9edba259d167e848892c5013d",
+        "version" : "0.8.0"
       }
     },
     {
